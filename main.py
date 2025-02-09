@@ -10,7 +10,7 @@ load_dotenv()
 app = FastAPI()
 
 # Pydantic models for request validation
-class SignRequest(BaseModel):
+class LatexRequest(BaseModel):
     request_type: str  # Initial request or style choice
     content: str      # The actual request content
     conversation_id: Optional[str] = None  # To track conversations
@@ -85,17 +85,17 @@ When users request materials, you should:
 
 Never generate code without first confirming style preferences."""
 
-class SignGenerator:
+class LatexGenerator:
     def __init__(self):
         self.conversation_history = []
     
-    def generate_sign(self, user_request):
+    def generate_suggestions(self, user_request):
         response = client.messages.create(
             model="claude-3-5-sonnet-20241022",
             max_tokens=1024,
             system=SYSTEM_PROMPT,
             messages=[
-                {"role": "user", "content": user_request}
+                {"role": "user", "content": f"Remember, only return suggestions for this request: \n \n {user_request}"}
             ]
         )
         self.conversation_history.extend([
@@ -144,20 +144,20 @@ class SignGenerator:
         ])
         return response.content
 
-@app.post("/generate-sign")
-async def generate_sign(request: SignRequest):
+@app.post("/generate-latex")
+async def generate_latex(request: LatexRequest):
     try:
         if request.conversation_id and request.conversation_id not in conversations:
             raise HTTPException(status_code=404, detail="Conversation not found")
         
         if request.request_type == "initial":
             # Create new conversation
-            generator = SignGenerator()
+            generator = LatexGenerator()
             conversation_id = str(len(conversations))
             conversations[conversation_id] = generator
             
             # Generate initial options
-            response = generator.generate_sign(request.content)
+            response = generator.generate_suggestions(request.content)
             
             return {
                 "conversation_id": conversation_id,
