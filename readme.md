@@ -18,3 +18,13 @@ curl -s -X POST "http://localhost:8000/generate-sign" \
      jq -r '.content[0].text'
 
 ```
+
+```bash
+curl -X POST http://localhost:8000/analyze-brand-guidelines \
+-H "Content-Type: application/json" \
+-d '{
+    "pdf_url": "https://dsgjssiyprmqymrpraxf.supabase.co/storage/v1/object/public/AAK//grafiskmanual-2.0.1-2024.pdf",
+    "brand_name": "LUND"
+}'
+
+```

@@ -4,6 +4,7 @@ import anthropic
 import os
 from dotenv import load_dotenv
 from typing import Optional
+from profile_generator import BrandAnalyzer
 
 load_dotenv()
 
@@ -16,7 +17,9 @@ class LatexRequest(BaseModel):
     conversation_id: Optional[str] = None  # To track conversations
     latex: Optional[str] = None
 
-
+class BrandGuidelineRequest(BaseModel):
+    pdf_url: str
+    brand_name: Optional[str] = None
 
 
     
@@ -196,6 +199,23 @@ async def generate_latex(request: LatexRequest):
         
         
             
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+@app.post("/analyze-brand-guidelines")
+async def analyze_brand_guidelines(request: BrandGuidelineRequest):
+    try:
+        analyzer = BrandAnalyzer(api_key="API KEY HERE")
+        system_prompt = analyzer.analyze_brand_guidelines(
+            request.pdf_url,
+            request.brand_name
+        )
+    
+        return {
+            "status": "success",
+            "system_prompt": system_prompt
+        }
+        
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
