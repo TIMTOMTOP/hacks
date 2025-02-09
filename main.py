@@ -14,6 +14,11 @@ class SignRequest(BaseModel):
     request_type: str  # Initial request or style choice
     content: str      # The actual request content
     conversation_id: Optional[str] = None  # To track conversations
+    latex: Optional[str] = None
+
+
+
+
     
 
 # Store conversations
@@ -69,6 +74,8 @@ Key Brand Elements:
   * images/ambient_photo_of_hotel_interior.png
   * images/cozy_fireplace_in_the_sunset.png
   * images/handpainted_illustration_on_alps_and_hotel_in_light_wash_green_on_transparent_background.png
+  * Example
+    + \includegraphics[width=8cm]{images/brand_avatar_on_transparent_background.png}
   
 
 When users request materials, you should:
@@ -119,7 +126,7 @@ class SignGenerator:
     
     def generate_update(self, user_update: str) -> str:
         # Construct the new message for the update request
-        user_message = f"{user_update}. Please generate the LaTeX code directly without asking any additional questions."
+        user_message = f"This is an update request to the last latex code: {user_update}.\nPlease generate the LaTeX code directly without asking any additional questions."
         messages = self.conversation_history + [
             {"role": "user", "content": user_message}
         ]
@@ -183,7 +190,7 @@ async def generate_sign(request: SignRequest):
             
             return {
                 "conversation_id": request.conversation_id,
-                "content": latex_code.content,
+                "content": latex_code,
                 "status": "latex_update"
             }
         
