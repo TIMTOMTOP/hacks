@@ -6,7 +6,7 @@
 ```bash
 curl -s -X POST "http://localhost:8000/generate-sign" \
      -H "Content-Type: application/json" \
-     -d '{"request_type": "initial", "content": "Create a broken elevator sign."}' | \
+     -d '{"request_type": "initial", "content": "..."}' | \
      jq '.content[0].text'  
 ```
 
